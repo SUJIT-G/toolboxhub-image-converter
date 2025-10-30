@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ToolBox Hub – Image Converter 🔄</title>
+  <meta name="description" content="Convert your images between JPG, PNG, and WEBP formats instantly. ToolBox Hub's free image converter is fast, secure, and works entirely in your browser." />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #0d1b2a;
+      color: #e0e1dd;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #00b4d8;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .converter {
+      background: #1b263b;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    input[type="file"], select, input[type="range"], button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+    }
+
+    input[type="file"] {
+      background: #e0e1dd;
+      color: #000;
+    }
+
+    select, input[type="range"] {
+      background: #1e3a5f;
+      color: #fff;
+    }
+
+    button {
+      background: #00b4d8;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #0096c7;
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #adb5bd;
+    }
+
+    .preview {
+      margin-top: 15px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .preview img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>ToolBox Hub – Image Converter 🔄</h1>
+  <div class="converter">
+    <input type="file" id="upload" accept="image/*" />
+    <select id="format">
+      <option value="image/jpeg">JPG</option>
+      <option value="image/png">PNG</option>
+      <option value="image/webp">WEBP</option>
+    </select>
+
+    <label for="quality">Quality: <span id="qualityValue">0.8</span></label>
+    <input type="range" id="quality" min="0.1" max="1" step="0.1" value="0.8" />
+
+    <button id="convert">Convert Image</button>
+
+    <div class="preview" id="preview">
+      <img id="outputImg" alt="Preview" />
+      <a id="downloadLink" download="converted-image.webp" style="color:#00b4d8;">Download Image</a>
+    </div>
+  </div>
+
+  <footer>© 2025 ToolBox Hub | Free Online Converter</footer>
+
+  <script>
+    const upload = document.getElementById('upload');
+    const convertBtn = document.getElementById('convert');
+    const format = document.getElementById('format');
+    const quality = document.getElementById('quality');
+    const qualityValue = document.getElementById('qualityValue');
+    const preview = document.getElementById('preview');
+    const outputImg = document.getElementById('outputImg');
+    const downloadLink = document.getElementById('downloadLink');
+
+    quality.addEventListener('input', () => {
+      qualityValue.textContent = quality.value;
+    });
+
+    convertBtn.addEventListener('click', () => {
+      const file = upload.files[0];
+      if (!file) {
+        alert('Please select an image file first.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+
+          const type = format.value;
+          const q = parseFloat(quality.value);
+          const dataURL = canvas.toDataURL(type, q);
+
+          outputImg.src = dataURL;
+          downloadLink.href = dataURL;
+          const ext = type.split('/')[1];
+          downloadLink.download = `converted-image.${ext}`;
+          preview.style.display = 'flex';
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html>
